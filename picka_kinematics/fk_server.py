@@ -36,7 +36,7 @@ class FKServer(Node):
 
         self.get_logger().info('FK service is ready.')
 
-    def calculate_fk_callbackk(self, request, response):
+    def calculate_fk_callback(self, request, response):
         try:
             joint_angles = list(request.joint_angles)
             transform, _ = forward_kinematics(joint_angles)
