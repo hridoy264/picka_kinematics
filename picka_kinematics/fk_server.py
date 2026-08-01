@@ -4,7 +4,7 @@ import rclpy
 from rclpy.node import Node
 
 from picka_interfaces.srv import CalculateFK
-from picka_kinematics.forward_kinematics_node import forward_kinematics
+from picka_kinematics.forward_kinematics_node import forward_kinematics, DH_PARAMETERS
 
 def rotation_matrix_to_rpy(rotation):
     # Convert a rotation matirix to fixed-axis roll, pitch and yaw. returns angles in radians.
