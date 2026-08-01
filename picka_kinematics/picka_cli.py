@@ -54,7 +54,7 @@ class PickaCLI(Node):
         ]
 
         point.time_from_start = Duration(
-            sec=3,
+            sec=8,
             nanosec=0,
         )
 
