@@ -7,6 +7,7 @@ import numpy as np
 from picka_interfaces.srv import CalculateFK
 from picka_kinematics.forward_kinematics_node import (
     DH_PARAMETERS,
+    JOINT_SIGNS,
     forward_kinematics,
 )
 def rotation_matrix_to_rpy(rotation):
@@ -39,10 +40,16 @@ class FKServer(Node):
     def calculate_fk_callback(self, request, response):
         try:
             joint_angles = list(request.joint_angles)
+
+            if len(joint_angles) != 4:
+                raise ValueError(
+                    f'Expected 4 arm-joint angles, received {len(joint_angles)}.'
+                )
+
             transform, _ = forward_kinematics(
                 joint_angles=joint_angles,
-                dh_parameters=DH_PARAMETERS,
-                joint_signs=[1, 1, 1, 1, 1],
+                dh_parameters=ARM_DH_PARAMETERS,
+                joint_signs=JOINT_SIGNS,
                 angles_in_degrees=True,
             )
 
