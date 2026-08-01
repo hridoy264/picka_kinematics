@@ -48,7 +48,7 @@ class FKServer(Node):
 
             transform, _ = forward_kinematics(
                 joint_angles=joint_angles,
-                dh_parameters=ARM_DH_PARAMETERS,
+                dh_parameters=DH_PARAMETERS,
                 joint_signs=JOINT_SIGNS,
                 angles_in_degrees=True,
             )
