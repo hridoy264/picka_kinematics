@@ -3,11 +3,11 @@ import numpy as np
 
 DH_PARAMETERS = [
     # a(m), alpha(deg), d(m), theta_offset(deg)
-    [0.00,  90.0, 0.10, 0.0],   # Joint 1
-    [0.20,   0.0, 0.00, 0.0],   # Joint 2
-    [0.18,   0.0, 0.00, 0.0],   # Joint 3
-    [0.00,  90.0, 0.00, 0.0],   # Joint 4
-    [0.00,   0.0, 0.08, 0.0]    # Joint 5
+    [1.75,  0, 68.622, 0.0],   # Joint 1
+    [12.119,   -90, 101.58, -90],   # Joint 2
+    [95.946,   0.0, 23.349, 123],   # Joint 3
+    [11.96,  -90, 9.9, -161],   # Joint 4
+    [9.913,   0.0, 155.697, 0.0]    # Joint 5
     ]
 def standard_dh_transform(a, alpha, d, theta):
     dh_parameters = DH_PARAMETERS
