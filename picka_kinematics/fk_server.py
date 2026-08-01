@@ -2,25 +2,25 @@ import math
 
 import rclpy
 from rclpy.node import Node
+import numpy as np
 
 from picka_interfaces.srv import CalculateFK
-from picka_kinematics.forward_kinematics_node import forward_kinematics, DH_PARAMETERS
-
+from picka_kinematics.forward_kinematics_node import (
+    DH_PARAMETERS,
+    forward_kinematics,
+)
 def rotation_matrix_to_rpy(rotation):
-    # Convert a rotation matirix to fixed-axis roll, pitch and yaw. returns angles in radians.
-    r20 = rotation[2, 0]
+    r20 = float(np.clip(rotation[2, 0], -1.0, 1.0))
 
-    # Normal case 
     if abs(r20) < 1.0 - 1e-9:
         pitch = math.asin(-r20)
-        roll = math.atan2(rotation[2,1], rotation[2, 2])
+        roll = math.atan2(rotation[2, 1], rotation[2, 2])
         yaw = math.atan2(rotation[1, 0], rotation[0, 0])
-
-    # Gimbal-lock case
     else:
         pitch = math.pi / 2 if r20 <= -1.0 else -math.pi / 2
         roll = 0.0
         yaw = math.atan2(-rotation[0, 1], rotation[1, 1])
+
     return roll, pitch, yaw
 
 
@@ -39,7 +39,12 @@ class FKServer(Node):
     def calculate_fk_callback(self, request, response):
         try:
             joint_angles = list(request.joint_angles)
-            transform, _ = forward_kinematics(joint_angles)
+            transform, _ = forward_kinematics(
+                joint_angles=joint_angles,
+                dh_parameters=DH_PARAMETERS,
+                joint_signs=[1, 1, 1, 1, 1],
+                angles_in_degrees=True,
+            )
 
             position = transform[:3, 3]
             rotation = transform[:3, :3]

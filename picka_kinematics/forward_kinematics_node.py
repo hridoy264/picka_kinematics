@@ -3,14 +3,20 @@ import numpy as np
 
 DH_PARAMETERS = [
     # a(m), alpha(deg), d(m), theta_offset(deg)
-    [1.75,  0, 68.622, 0.0],   # Joint 1
-    [12.119,   -90, 101.58, -90],   # Joint 2
-    [95.946,   0.0, 23.349, 123],   # Joint 3
-    [11.96,  -90, 9.9, -161],   # Joint 4
-    [9.913,   0.0, 155.697, 0.0]    # Joint 5
-    ]
+    [0.001750,   0.0,  0.068622,    0.0],
+    [0.012119, -90.0,  0.101580,  -90.0],
+    [0.095946,   0.0,  0.023349,  123.0],
+    [0.011960, -90.0,  0.009900, -161.0],
+    [0.009913,   0.0,  0.155697,    0.0],
+]
+JOINT_LIMITS = [
+    (-160.0, 160.0),
+    (-45.0, 90.0),
+    (0.0, 120.0),
+    (-80.0, 80.0),
+    (0.0, 30.0),
+]
 def standard_dh_transform(a, alpha, d, theta):
-    dh_parameters = DH_PARAMETERS
 
     ct = np.cos(theta)
     st = np.sin(theta)
@@ -39,6 +45,24 @@ def forward_kinematics(joint_angles, dh_parameters, joint_signs=None,angles_in_d
     if len(joint_signs) != number_of_joints:
         raise ValueError("joint_signs must contain one value per joint.")
 
+
+    if len(joint_angles) != len(JOINT_LIMITS):
+        raise ValueError(
+            f'Expected {len(JOINT_LIMITS)} joint angles, '
+            f'received {len(joint_angles)}.'
+        )
+
+    for index, (angle, limits) in enumerate(
+        zip(joint_angles, JOINT_LIMITS),
+        start=1,
+    ):
+        lower, upper = limits
+
+        if not lower <= angle <= upper:
+            raise ValueError(
+                f'Joint {index} angle {angle}° is outside '
+                f'the allowed range [{lower}°, {upper}°].'
+            )
     # Begin at the base coordinate frame
     T_0_n = np.eye(4)
     transformations = []
@@ -64,7 +88,7 @@ def forward_kinematics(joint_angles, dh_parameters, joint_signs=None,angles_in_d
     return T_0_n, transformations
 
 if __name__ == "__main__":
-    q_degrees = [30.0, 20.0, -40.0, 15.0, 10.0]
+    q_degrees = [30.0, 20.0, 40.0, 15.0, 10.0]
 
     # Use +1 when the physical positive direction agrees with the
     # positive direction used in the DH model.
