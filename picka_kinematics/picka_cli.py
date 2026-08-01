@@ -67,11 +67,16 @@ class PickaCLI(Node):
     )
 def read_joint_angles():
     user_input = input(
-        'Enter θ1 θ2 θ3 θ4 θ5 in degrees, separated by spaces: '
+        'Enter θ1 θ2 θ3 θ4 in degrees, separated by spaces: '
     )
+
     values = [float(value) for value in user_input.split()]
-    if len(values) != 5:
-        raise ValueError('You must enter exactly five joint angles.')
+
+    if len(values) != 4:
+        raise ValueError(
+            'You must enter exactly four arm-joint angles.'
+        )
+
     return values
 def main(args=None):
     rclpy.init(args=args)
@@ -90,12 +95,18 @@ def main(args=None):
                 print('The FK service returned no response.')
             elif response.success:
                 print('\nEnd-effector pose')
-                print(f'x   = {response.x:.4f} m')
-                print(f'y   = {response.y:.4f} m')
-                print(f'z   = {response.z:.4f} m')
-                print(f'roll: = {response.roll:.2f} degree')
-                print(f'pitch = {response.pitch:.2f} degeree')
-                print(f'yaw = {response.yaw:.2f} degree')
+                print(f'x     = {response.x:.4f} m')
+                print(f'y     = {response.y:.4f} m')
+                print(f'z     = {response.z:.4f} m')
+                print(f'roll  = {response.roll:.2f} degrees')
+                print(f'pitch = {response.pitch:.2f} degrees')
+                print(f'yaw   = {response.yaw:.2f} degrees')
+
+                # Send the same four angles to Gazebo
+                node.move_gazebo_arm(joint_angles)
+
+                # Give ROS time to transmit the trajectory message
+                rclpy.spin_once(node, timeout_sec=0.5)
             else:
                 print(f'FK failed: {response.message}')
         elif choice == '2':
